@@ -35,8 +35,11 @@ class _ListPageState extends State<ListPage> {
       body: BlocBuilder(
         bloc: _listBloc,
         builder: (context, ListState state) {
+
+          print('state: $state');
+
           if (state.listItems.isEmpty) {
-            return CircularProgressIndicator();
+            return Center(child: CircularProgressIndicator());
           } else {
             return NotificationListener<ScrollNotification>(
               onNotification: _handleScrollNotification,
@@ -44,9 +47,9 @@ class _ListPageState extends State<ListPage> {
                 controller: _scrollController,
                 itemCount: _calculateListItemCount(state),
                 itemBuilder: (context, index) {
-                  return index >= state.listItems.length + 1
-                      ? _buildLoaderListItem()
-                      : _buildDataListItem(state.listItems[index]);
+                  return index < state.listItems.length
+                      ? _buildDataListItem(state.listItems[index])
+                      : _buildLoaderListItem();
                 },
               ),
             );

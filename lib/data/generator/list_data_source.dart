@@ -5,7 +5,7 @@ import 'package:infinite_listview_example/data/model/list_item.dart';
 
 class ListDataSource {
   static const int ITEMS_PER_PAGE = 20;
-  static const int PAGE_COUNT = 5;
+  static const int MAX_PAGE_COUNT = 5;
 
   static final rnd = Random();
 
@@ -13,11 +13,12 @@ class ListDataSource {
 
   Future<BuiltList<ListItem>> getNextListPage() async {
 
-    if(_showPagesCount > PAGE_COUNT) {
+    _showPagesCount++;
+
+    if(_showPagesCount > MAX_PAGE_COUNT) {
 
       throw NoNextPageException();
     }
-    _showPagesCount++;
 
     await Future.delayed(Duration(milliseconds: 750));
 
@@ -26,7 +27,7 @@ class ListDataSource {
 
   ListItem _generateListItem(int index) {
     return ListItem((b) => b
-      ..title = '$index Lorem ipsum'
+      ..title = 'item #$index on the Page $_showPagesCount'
       ..colorInt = rnd.nextInt(0xFFFFFFFF));
   }
 }
