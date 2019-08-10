@@ -3,6 +3,7 @@ library list_state;
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
 import 'package:infinite_listview_example/data/model/list_item.dart';
+import 'package:infinite_listview_example/ui/list/list_bloc.dart';
 
 part 'list_state.g.dart';
 

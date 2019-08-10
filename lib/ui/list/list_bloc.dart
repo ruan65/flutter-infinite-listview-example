@@ -24,4 +24,8 @@ class ListBloc extends Bloc<ListEvent, ListState> {
       }
     }
   }
+
+  getNextPage() {
+    dispatch(FetchNextPageEvent());
+  }
 }
