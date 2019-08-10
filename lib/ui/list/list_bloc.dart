@@ -18,7 +18,7 @@ class ListBloc extends Bloc<ListEvent, ListState> {
 
       try {
         final nextPageItems = await _listDataSource.getNextListPage();
-        yield ListState.success(currentState.listItems + nextPageItems);
+        yield ListState.success(nextPageItems + currentState.listItems);
       } on NoNextPageException catch (_) {
         yield currentState.rebuild((b) => b..hasReachedEndOfResults = true);
       }

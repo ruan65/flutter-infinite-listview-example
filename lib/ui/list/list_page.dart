@@ -27,7 +27,6 @@ class _ListPageState extends State<ListPage> {
     super.dispose();
   }
 
-//  final _
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,6 +91,9 @@ class _ListPageState extends State<ListPage> {
   }
 
   bool _handleScrollNotification(ScrollNotification notification) {
+
+    print('scroll notification: $notification');
+
     if (notification is ScrollEndNotification &&
         _scrollController.position.extentAfter == 0) {
       _listBloc.getNextPage();
