@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:infinite_listview_example/data/model/list_item.dart';
@@ -14,6 +16,8 @@ class _ListPageState extends State<ListPage> {
   final _scrollController = ScrollController(initialScrollOffset: 500);
 
   final _listBloc = kiwi.Container().resolve<ListBloc>();
+
+  List<double> jumps = [];
 
   @override
   void initState() {
@@ -34,34 +38,49 @@ class _ListPageState extends State<ListPage> {
       body: BlocBuilder(
         bloc: _listBloc,
         builder: (context, ListState state) {
-          print('state: $state');
-//          Timer(
-//              Duration(milliseconds: 1200),
-//              () => _scrollController
-//                  .jumpTo(_scrollController.position.maxScrollExtent -50));
+//          print('state: $state');
+
           if (state.listItems.isEmpty) {
             return Center(child: CircularProgressIndicator());
           } else {
-            return NotificationListener<ScrollNotification>(
+            var listBody = NotificationListener<ScrollNotification>(
               onNotification: _handleScrollNotification,
               child: ListView.builder(
                 controller: _scrollController,
                 itemCount: _calculateListItemCount(state),
                 itemBuilder: (context, index) {
                   return _buildDataListItem(state.listItems[index]);
-//                  return index < state.listItems.length
-//                      ? _buildDataListItem(state.listItems[index])
-//                      : _buildLoaderListItem();
-//                  return index == 0 && !state.hasReachedEndOfResults
-//                      ? _buildLoaderListItem()
-//                      : _buildDataListItem(state.listItems[state.hasReachedEndOfResults ? index : index - 1]);
                 },
               ),
             );
+
+            Timer(Duration(milliseconds: 0), () {
+              print('jump to = $jumps');
+
+              _scrollController.jumpTo(_calculateJump(jumps));
+            });
+            return listBody;
           }
         },
       ),
     );
+  }
+
+  double _calculateJump(List<double> list) {
+    double jump = 0;
+    switch (jumps.length) {
+      case 0:
+        jump = _scrollController.position.maxScrollExtent;
+        break;
+      case 1:
+        jump = jumps[0];
+        break;
+      default:
+        jump = jumps.last - jumps[jumps.length - 2];
+        break;
+    }
+    print('jump will be: $jump');
+    return jump;
   }
 
   Widget _buildLoaderListItem() {
@@ -101,12 +120,17 @@ class _ListPageState extends State<ListPage> {
   }
 
   bool _handleScrollNotification(ScrollNotification notification) {
+//    print('scroll notification: $notification');
     var position = _scrollController.position;
-    print('extentAfter: ${position.extentAfter}');
-    print('extentBefore: ${position.extentBefore}');
-    print('extentInside: ${position.extentInside}');
 
     if (notification is ScrollEndNotification && position.extentBefore == 0) {
+      print('extentAfter: ${position.extentAfter}');
+      print('extentBefore: ${position.extentBefore}');
+      print('extentInside: ${position.extentInside}');
+
+//      jumpTo = position.extentAfter + position.extentInside - jumpTo;
+      var newJump = position.extentInside + position.extentAfter;
+      jumps.add(newJump);
       _listBloc.getNextPage();
     }
 
