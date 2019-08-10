@@ -48,7 +48,7 @@ class _ListPageState extends State<ListPage> {
                 controller: _scrollController,
                 itemCount: _calculateListItemCount(state),
                 itemBuilder: (context, index) {
-                  return _buildDataListItem(state.listItems[index])
+                  return _buildDataListItem(state.listItems[index]);
 //                  return index < state.listItems.length
 //                      ? _buildDataListItem(state.listItems[index])
 //                      : _buildLoaderListItem();
@@ -71,6 +71,9 @@ class _ListPageState extends State<ListPage> {
   }
 
   Widget _buildDataListItem(ListItem item) {
+    String title = item.title;
+    int tryParse = int.tryParse(title[title.length - 1]);
+    final isRed = tryParse == null ? false : tryParse % 2 == 0;
     return Card(
       elevation: 2,
       child: Padding(
@@ -88,7 +91,8 @@ class _ListPageState extends State<ListPage> {
             SizedBox(width: 16),
             Text(
               item.title,
-              style: TextStyle(fontSize: 20),
+              style: TextStyle(
+                  fontSize: 20, color: isRed ? Colors.red : Colors.blue),
             )
           ],
         ),
