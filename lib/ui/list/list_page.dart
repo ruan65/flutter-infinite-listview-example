@@ -11,7 +11,7 @@ class ListPage extends StatefulWidget {
 }
 
 class _ListPageState extends State<ListPage> {
-  final _scrollController = ScrollController();
+  final _scrollController = ScrollController(initialScrollOffset: 500);
 
   final _listBloc = kiwi.Container().resolve<ListBloc>();
 
@@ -34,9 +34,11 @@ class _ListPageState extends State<ListPage> {
       body: BlocBuilder(
         bloc: _listBloc,
         builder: (context, ListState state) {
-
           print('state: $state');
-
+//          Timer(
+//              Duration(milliseconds: 1200),
+//              () => _scrollController
+//                  .jumpTo(_scrollController.position.maxScrollExtent -50));
           if (state.listItems.isEmpty) {
             return Center(child: CircularProgressIndicator());
           } else {
@@ -46,9 +48,13 @@ class _ListPageState extends State<ListPage> {
                 controller: _scrollController,
                 itemCount: _calculateListItemCount(state),
                 itemBuilder: (context, index) {
-                  return index < state.listItems.length
-                      ? _buildDataListItem(state.listItems[index])
-                      : _buildLoaderListItem();
+                  return _buildDataListItem(state.listItems[index])
+//                  return index < state.listItems.length
+//                      ? _buildDataListItem(state.listItems[index])
+//                      : _buildLoaderListItem();
+//                  return index == 0 && !state.hasReachedEndOfResults
+//                      ? _buildLoaderListItem()
+//                      : _buildDataListItem(state.listItems[state.hasReachedEndOfResults ? index : index - 1]);
                 },
               ),
             );
@@ -91,11 +97,12 @@ class _ListPageState extends State<ListPage> {
   }
 
   bool _handleScrollNotification(ScrollNotification notification) {
+    var position = _scrollController.position;
+    print('extentAfter: ${position.extentAfter}');
+    print('extentBefore: ${position.extentBefore}');
+    print('extentInside: ${position.extentInside}');
 
-    print('scroll notification: $notification');
-
-    if (notification is ScrollEndNotification &&
-        _scrollController.position.extentAfter == 0) {
+    if (notification is ScrollEndNotification && position.extentBefore == 0) {
       _listBloc.getNextPage();
     }
 
@@ -106,7 +113,8 @@ class _ListPageState extends State<ListPage> {
     if (state.hasReachedEndOfResults) {
       return state.listItems.length;
     } else {
-      return state.listItems.length + 1;
+      return state.listItems.length;
+//      return state.listItems.length + 1;
     }
   }
 }
